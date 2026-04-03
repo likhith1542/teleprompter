@@ -1,0 +1,82 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (e.g. 1.0.0)'
+        required: true
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-latest
+            args: --target aarch64-apple-darwin
+            rust_target: aarch64-apple-darwin
+            label: macos-arm64
+          - platform: macos-13
+            args: --target x86_64-apple-darwin
+            rust_target: x86_64-apple-darwin
+            label: macos-x64
+          - platform: windows-latest
+            args: ''
+            rust_target: ''
+            label: windows-x64
+
+    runs-on: ${{ matrix.platform }}
+    name: Build (${{ matrix.label }})
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust_target }}
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: ./src-tauri -> target
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: Teleprompter ${{ github.ref_name }}
+          releaseBody: |
+            ## Teleprompter ${{ github.ref_name }}
+
+            > Unsigned build — see install notes below.
+
+            | Platform | File |
+            |---|---|
+            | macOS Apple Silicon | Teleprompter_*_aarch64.dmg |
+            | macOS Intel | Teleprompter_*_x64.dmg |
+            | Windows | Teleprompter_*_x64-setup.exe |
+
+            **macOS:** Right-click the app → Open → Open anyway.
+            Or run: `xattr -cr /Applications/Teleprompter.app`
+
+            **Windows:** Click More info → Run anyway.
+          releaseDraft: false
+          prerelease: false
+          args: ${{ matrix.args }}
