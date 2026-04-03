@@ -1,0 +1,16 @@
+.app {
+  width: 100vw;
+  height: 100vh;
+  background: var(--bg);
+  overflow: hidden;
+  position: relative;
+  /* Window-level opacity controlled via --window-opacity CSS var.
+     Applied here so it affects everything — text, controls, background.
+     The window itself is OS-transparent; this dims the webview content. */
+  opacity: var(--window-opacity, 0.92);
+  transition: opacity 0.05s linear;
+}
+
+.app[data-view="teleprompter"] {
+  background: transparent;
+}

@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+dist-ssr/
+*.local
+
+# Tauri build artifacts
+src-tauri/target/
+src-tauri/WixTools/
+src-tauri/gen/
+
+# Tauri updater keys (NEVER commit these)
+*.key
+*.key.pub
+
+# macOS
+.DS_Store
+.AppleDouble
+*.dmg
+
+# Windows
+Thumbs.db
+*.exe
+*.msi
+*.msix
+
+# Linux
+*.AppImage
+*.deb
+*.rpm
+
+# Editor
+.vscode/settings.json
+.idea/
+*.swp
+*~
+
+# Env files
+.env
+.env.local
+.env.*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# TypeScript
+*.tsbuildinfo

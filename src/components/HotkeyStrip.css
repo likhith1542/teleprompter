@@ -1,0 +1,199 @@
+/* ── Interactive strip ────────────────────────────────────────────────────── */
+
+.hks {
+  position: fixed;
+  /* Sit ABOVE the floating toolbar (which is at bottom:28px, ~50px tall)
+     so they never overlap */
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  pointer-events: auto;
+}
+
+/* Collapsed: tiny pulsing dot */
+.hks__dot {
+  width: 8px;
+  height: 8px;
+  background: rgba(232, 255, 71, 0.5);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  animation: hks-pulse 2.5s ease-in-out infinite;
+}
+
+.hks--expanded .hks__dot {
+  display: none;
+}
+
+@keyframes hks-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.3); }
+}
+
+/* Controls bar */
+.hks__controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(10, 10, 12, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 40px;
+  padding: 5px 10px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.hks--collapsed .hks__controls {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(6px);
+}
+
+.hks--expanded .hks__controls {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* Pass-through toggle button */
+.hks__ct-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  padding: 4px 9px 4px 7px;
+  color: rgba(255,255,255,0.4);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.hks__ct-btn svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+
+.hks__ct-btn:hover {
+  border-color: rgba(232,255,71,0.3);
+  color: #e8ff47;
+  background: rgba(232,255,71,0.06);
+}
+
+/* Icon buttons */
+.hks__btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: rgba(255,255,255,0.45);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.hks__btn svg { width: 15px; height: 15px; }
+.hks__btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+.hks__btn--active { color: #e8ff47; }
+.hks__btn--exit:hover { color: #ff4747; }
+
+.hks__speed {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: rgba(255,255,255,0.5);
+  min-width: 28px;
+  text-align: center;
+}
+
+.hks__sep {
+  width: 1px;
+  height: 16px;
+  background: rgba(255,255,255,0.07);
+  margin: 0 2px;
+}
+
+/* ── Click-through reminder (keyboard-only mode) ──────────────────────────── */
+
+.hks-reminder {
+  position: fixed;
+  /* Top-center — away from the reading zone which is middle of screen */
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-60px);
+  opacity: 0;
+  z-index: 200;
+  pointer-events: none; /* purely informational, no interaction */
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(10, 10, 12, 0.92);
+  border: 1px solid rgba(232, 255, 71, 0.2);
+  border-radius: 10px;
+  padding: 10px 16px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.hks-reminder--visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.hks-reminder__icon {
+  color: #e8ff47;
+  flex-shrink: 0;
+}
+.hks-reminder__icon svg { width: 18px; height: 18px; }
+
+.hks-reminder__keys {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.hks-reminder__keys > span {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: #e8ff47;
+}
+
+.hks-reminder__row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.hks-reminder__row span {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: rgba(255,255,255,0.4);
+  margin-right: 4px;
+}
+
+kbd {
+  font-family: var(--mono);
+  font-size: 9px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 3px;
+  padding: 2px 6px;
+  color: rgba(255,255,255,0.7);
+}

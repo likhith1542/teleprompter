@@ -1,0 +1,73 @@
+.tp-root {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  border-radius: 0;
+}
+
+.tp-scroll {
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: auto;
+}
+
+.tp-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.tp-spacer-top,
+.tp-spacer-bottom {
+  height: 50vh;
+}
+
+.tp-text {
+  display: block;
+  padding: 0 8%;
+  max-width: 100%;
+  word-break: break-word;
+}
+
+.tp-eyeline {
+  position: fixed;
+  top: 40%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(232, 255, 71, 0.15) 20%,
+    rgba(232, 255, 71, 0.25) 50%,
+    rgba(232, 255, 71, 0.15) 80%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 10;
+}
+
+.tp-fade-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.tp-fade-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 5;
+}
