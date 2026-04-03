@@ -48,7 +48,7 @@ esac
 echo -e "  ${BOLD}${CURRENT} → ${NEXT}${NC}"
 echo ""
 read -rp "$(echo -e "${YELLOW}Continue?${NC} [y/N] ")" CONFIRM
-[[ "${CONFIRM,,}" == "y" ]] || { log "Aborted."; exit 0; }
+[[ "$(echo "$CONFIRM" | tr "[:upper:]" "[:lower:]")" == "y" ]] || { log "Aborted."; exit 0; }
 echo ""
 
 # ── Bump all three version files (via node — cross-platform) ─────────────────
