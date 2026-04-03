@@ -65,18 +65,67 @@ jobs:
           releaseBody: |
             ## Teleprompter ${{ github.ref_name }}
 
-            > Unsigned build — see install notes below.
-
             | Platform | File |
             |---|---|
             | macOS Apple Silicon | Teleprompter_*_aarch64.dmg |
             | macOS Intel | Teleprompter_*_x64.dmg |
             | Windows | Teleprompter_*_x64-setup.exe |
 
-            **macOS:** Right-click the app → Open → Open anyway.
-            Or run: `xattr -cr /Applications/Teleprompter.app`
-
+            **macOS:** Ad-hoc signed — no Gatekeeper warning.
             **Windows:** Click More info → Run anyway.
           releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
+
+      # ── Ad-hoc sign the .app after build (macOS only) ──────────────────────
+      # Ad-hoc signing uses "-" as the identity — no Apple Developer account needed.
+      # This removes the "damaged and can't be opened" error completely.
+      # Users may still see "unidentified developer" on first launch but NOT "damaged".
+      - name: Ad-hoc sign the app (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          # Find the built .app bundle
+          APP=$(find src-tauri/target -name "*.app" -not -path "*/build/*" | head -1)
+          if [ -n "$APP" ]; then
+            echo "Signing: $APP"
+            # Remove existing quarantine attributes
+            xattr -cr "$APP"
+            # Ad-hoc sign with hardened runtime
+            codesign --force --deep --sign "-" \
+              --options runtime \
+              --entitlements src-tauri/entitlements.plist \
+              "$APP"
+            echo "Signed successfully"
+            codesign --verify --verbose "$APP"
+          else
+            echo "No .app found, skipping"
+          fi
+
+      # Re-package the DMG after signing so the signed .app is inside
+      - name: Repackage DMG with signed app (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          DMG=$(find src-tauri/target -name "*.dmg" | head -1)
+          APP=$(find src-tauri/target -name "*.app" -not -path "*/build/*" | head -1)
+          if [ -n "$DMG" ] && [ -n "$APP" ]; then
+            echo "Repacking $DMG with signed $APP"
+            DMG_DIR=$(dirname "$DMG")
+            DMG_NAME=$(basename "$DMG")
+            MOUNT_POINT="/tmp/dmg_mount_$$"
+
+            # Mount original DMG
+            hdiutil attach "$DMG" -mountpoint "$MOUNT_POINT" -nobrowse -quiet
+
+            # Create new DMG from the signed .app
+            hdiutil create \
+              -volname "Teleprompter" \
+              -srcfolder "$MOUNT_POINT" \
+              -ov -format UDZO \
+              "/tmp/${DMG_NAME}"
+
+            hdiutil detach "$MOUNT_POINT" -quiet
+
+            # Replace original
+            cp "/tmp/${DMG_NAME}" "$DMG"
+            echo "DMG repacked: $DMG"
+          fi
