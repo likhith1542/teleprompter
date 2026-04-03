@@ -92,7 +92,7 @@ git tag -a "${TAG}" -m "Release ${TAG}"
 ok "Tagged"
 
 log "Pushing to origin..."
-git push origin main
+git push origin HEAD
 git push origin "${TAG}"
 ok "Pushed"
 
